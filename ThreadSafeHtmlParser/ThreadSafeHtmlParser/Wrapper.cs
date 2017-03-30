@@ -10,6 +10,8 @@ namespace ThreadSafeHtmlParser
 {
     public class Wrapper
     {
+        private readonly object _locker = new object();
+
         private IWebClient _webClient = null;
         private IHtmlParser _parser = null;
 
@@ -21,13 +23,18 @@ namespace ThreadSafeHtmlParser
 
         public IHtmlDocument GetDocument(string urlText)
         {
-            string htmlText = _webClient.GetStringAsync(urlText).GetAwaiter().GetResult();
-            Console.WriteLine($"Thread#{Thread.CurrentThread.ManagedThreadId} -> {htmlText}");
+            lock (_locker)
+            {
+                Console.WriteLine($"Thread#{Thread.CurrentThread.ManagedThreadId} loading...");
+                string htmlText = _webClient.GetStringAsync(urlText).GetAwaiter().GetResult();
+                Console.WriteLine($"Thread#{Thread.CurrentThread.ManagedThreadId} -> {htmlText}");
+            
+                Console.WriteLine($"Thread#{Thread.CurrentThread.ManagedThreadId} parsing...");
+                IHtmlDocument result = _parser.Parse(htmlText);
+                Console.WriteLine($"Thread#{Thread.CurrentThread.ManagedThreadId} -> {result.Content}");
 
-            IHtmlDocument result = _parser.Parse(htmlText);
-            Console.WriteLine($"Thread#{Thread.CurrentThread.ManagedThreadId} -> {result.Content}");
-
-            return result;
+                return result;
+            }
         }
     }
 }

@@ -13,11 +13,12 @@ namespace ThreadSafeHtmlParser
         {
             Wrapper w = new Wrapper(new WebClient(), new HtmlParser());
 
-            int taskCount = 2;
+            int taskCount = 5;
             Task[] tasks = new Task[taskCount];
             for (int i = 0; i < taskCount; i++)
             {
-                tasks[i] = Task.Factory.StartNew(() => w.GetDocument($"doc-{i}"));
+                int docno = i;
+                tasks[i] = Task.Factory.StartNew(() => w.GetDocument($"doc-{docno}"));
             }
 
             Task.WaitAll(tasks);
