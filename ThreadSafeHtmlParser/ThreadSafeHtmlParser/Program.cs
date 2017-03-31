@@ -12,23 +12,23 @@ namespace ThreadSafeHtmlParser
     {
         static void Main(string[] args)
         {
-            //Wrapper w = new Wrapper(new WebClient(), new HtmlParser());
+            Wrapper w = new Wrapper(new WebClient(), new HtmlParser());
 
-            //int taskCount = 5;
-            //Task[] tasks = new Task[taskCount];
-            //for (int i = 0; i < taskCount; i++)
-            //{
-            //    int docno = i;
-            //    tasks[i] = Task.Factory.StartNew(() => w.GetDocument($"doc-{docno}"));
-            //}
+            int taskCount = 5;
+            Task[] tasks = new Task[taskCount];
+            for (int i = 0; i < taskCount; i++)
+            {
+                int docno = i;
+                tasks[i] = Task.Factory.StartNew(() => w.GetDocument($"doc-{docno}"));
+            }
 
-            //Task.WaitAll(tasks);
+            Task.WaitAll(tasks);
 
-            //Console.WriteLine("All tasks completed");
+            Console.WriteLine("All tasks completed");
             ////////////////////////////////////////////////////
 
-            Task task = DummyAsync();
-            task.Wait();
+            //Task task = DummyAsync();
+            //task.Wait();
 
             Console.ReadKey();
         }
