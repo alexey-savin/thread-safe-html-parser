@@ -45,6 +45,7 @@
     <Compile Include="Implementation\HtmlDocument.cs" />
     <Compile Include="Implementation\HtmlParser.cs" />
     <Compile Include="Implementation\WebClient.cs" />
+    <Compile Include="Interfaces\IAwait.cs" />
     <Compile Include="Interfaces\IHtmlDocument.cs" />
     <Compile Include="Interfaces\IHtmlParser.cs" />
     <Compile Include="Interfaces\IWebClient.cs" />

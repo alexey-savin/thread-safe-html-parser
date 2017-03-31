@@ -11,10 +11,9 @@ namespace ThreadSafeHtmlParser.Implementation
     {
         public async Task<string> GetStringAsync(string urlText)
         {
-            return await Task.Run(() =>
-            {
-                return $"<{urlText}>";
-            });
+            await Task.Delay(2000);
+
+            return $"<{urlText}>";
         }
     }
 }
