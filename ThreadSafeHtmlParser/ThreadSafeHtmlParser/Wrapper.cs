@@ -23,13 +23,14 @@ namespace ThreadSafeHtmlParser
 
         public IHtmlDocument GetDocument(string urlText)
         {
-            lock (_locker)
+            //lock (_locker)
             {
-                Console.WriteLine($"Thread#{Thread.CurrentThread.ManagedThreadId} loading...");
+                Console.WriteLine($"Thread#{Thread.CurrentThread.ManagedThreadId} started work...");
+                Console.WriteLine("Loading...");
                 string htmlText = _webClient.GetStringAsync(urlText).GetAwaiter().GetResult();
                 Console.WriteLine($"Thread#{Thread.CurrentThread.ManagedThreadId} -> {htmlText}");
             
-                Console.WriteLine($"Thread#{Thread.CurrentThread.ManagedThreadId} parsing...");
+                Console.WriteLine("Parsing...");
                 IHtmlDocument result = _parser.Parse(htmlText);
                 Console.WriteLine($"Thread#{Thread.CurrentThread.ManagedThreadId} -> {result.Content}");
 
