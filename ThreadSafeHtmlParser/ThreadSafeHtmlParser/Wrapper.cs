@@ -10,7 +10,8 @@ namespace ThreadSafeHtmlParser
 {
     public class Wrapper
     {
-        private readonly object _locker = new object();
+        private readonly object _lockParser = new object();
+        private readonly AsyncLock _asyncLocker = new AsyncLock();
 
         private IWebClient _webClient = null;
         private IHtmlParser _parser = null;
@@ -21,18 +22,22 @@ namespace ThreadSafeHtmlParser
             _parser = parser;
         }
 
-        public IHtmlDocument GetDocument(string urlText)
+        public async Task<IHtmlDocument> GetDocumentAsync(string urlText)
         {
-            //lock (_locker)
+            string htmlText = "";
+
+            using (await _asyncLocker.LockAsync())
             {
-                Console.WriteLine($"Thread#{Thread.CurrentThread.ManagedThreadId} started work...");
-                Console.WriteLine("Loading...");
-                string htmlText = _webClient.GetStringAsync(urlText).GetAwaiter().GetResult();
-                Console.WriteLine($"Thread#{Thread.CurrentThread.ManagedThreadId} -> {htmlText}");
+                Console.WriteLine($"{urlText} Loading...");
+                htmlText = await _webClient.GetStringAsync(urlText);
+                Console.WriteLine($"{urlText} done loading");
+            }
             
-                Console.WriteLine("Parsing...");
+            lock (_lockParser)
+            {
+                Console.WriteLine($"{urlText} Parsing...");
                 IHtmlDocument result = _parser.Parse(htmlText);
-                Console.WriteLine($"Thread#{Thread.CurrentThread.ManagedThreadId} -> {result.Content}");
+                Console.WriteLine($"{urlText} done parsing");
 
                 return result;
             }

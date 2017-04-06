@@ -43,6 +43,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AsyncLock.cs" />
+    <Compile Include="AsyncSemaphore.cs" />
     <Compile Include="Implementation\HtmlDocument.cs" />
     <Compile Include="Implementation\HtmlParser.cs" />
     <Compile Include="Implementation\WebClient.cs" />

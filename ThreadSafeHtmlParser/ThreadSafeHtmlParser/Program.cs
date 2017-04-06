@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading.Tasks;
 using ThreadSafeHtmlParser.Implementation;
 
@@ -12,19 +9,24 @@ namespace ThreadSafeHtmlParser
     {
         static void Main(string[] args)
         {
+            var resources = new[] { "doc-1", "doc-2", "master", "eng" };
             Wrapper w = new Wrapper(new WebClient(), new HtmlParser());
 
-            int taskCount = 5;
+            int taskCount = resources.Length;
+
             Task[] tasks = new Task[taskCount];
             for (int i = 0; i < taskCount; i++)
             {
-                int docno = i;
-                tasks[i] = Task.Factory.StartNew(() => w.GetDocument($"doc-{docno}"));
+                var res = resources[i];
+
+                tasks[i] = Task.Factory.StartNew(async () => 
+                {
+                    Console.WriteLine($"Task {Task.CurrentId} started ({res})");
+
+                    var idoc = await w.GetDocumentAsync(res);
+                    Console.WriteLine(idoc.Content);
+                });
             }
-
-            Task.WaitAll(tasks);
-
-            Console.WriteLine("All tasks completed");
             ////////////////////////////////////////////////////
 
             //Task task = DummyAsync();
