@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using ThreadSafeHtmlParser.Interfaces;
 
@@ -16,6 +12,9 @@ namespace ThreadSafeHtmlParser
         private IWebClient _webClient = null;
         private IHtmlParser _parser = null;
 
+        private int _downloadingCounter = 0;
+        private int _parsingCounter = 0;
+
         public Wrapper(IWebClient webClient, IHtmlParser parser)
         {
             _webClient = webClient;
@@ -28,17 +27,33 @@ namespace ThreadSafeHtmlParser
 
             using (await _asyncLocker.LockAsync())
             {
+                ++_downloadingCounter;
+
+                if (_downloadingCounter > 1)
+                {
+                    Console.WriteLine("More than one downloads!!!");
+                }
+
                 Console.WriteLine($"{urlText} Loading...");
                 htmlText = await _webClient.GetStringAsync(urlText);
-                Console.WriteLine($"{urlText} done loading");
+                
+                --_downloadingCounter;
             }
             
             lock (_lockParser)
             {
+                ++_parsingCounter;
+
+                if (_parsingCounter > 1)
+                {
+                    Console.WriteLine("More than one parsers!!!");
+                }
+
                 Console.WriteLine($"{urlText} Parsing...");
                 IHtmlDocument result = _parser.Parse(htmlText);
-                Console.WriteLine($"{urlText} done parsing");
 
+                --_parsingCounter;
+                
                 return result;
             }
         }

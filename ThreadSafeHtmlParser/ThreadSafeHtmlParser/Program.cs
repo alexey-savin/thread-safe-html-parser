@@ -2,6 +2,7 @@
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using ThreadSafeHtmlParser.Implementation;
+using ThreadSafeHtmlParser.Interfaces;
 
 namespace ThreadSafeHtmlParser
 {
@@ -14,18 +15,21 @@ namespace ThreadSafeHtmlParser
 
             int taskCount = resources.Length;
 
-            Task[] tasks = new Task[taskCount];
+            Task<IHtmlDocument>[] tasks = new Task<IHtmlDocument>[taskCount];
             for (int i = 0; i < taskCount; i++)
             {
                 var res = resources[i];
 
-                tasks[i] = Task.Factory.StartNew(async () => 
-                {
-                    Console.WriteLine($"Task {Task.CurrentId} started ({res})");
+                Console.WriteLine($"Task ({res}) started");
+                tasks[i] = w.GetDocumentAsync(res);
+            }
 
-                    var idoc = await w.GetDocumentAsync(res);
-                    Console.WriteLine(idoc.Content);
-                });
+            Task.WaitAll(tasks);
+
+            Console.WriteLine("\nDone!");
+            for (int i = 0; i < tasks.Length; i++)
+            {
+                Console.WriteLine(tasks[i].Result.Content);
             }
             ////////////////////////////////////////////////////
 
